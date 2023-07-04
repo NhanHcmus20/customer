@@ -4,4 +4,4 @@ WEB COACHING ONLINE
 
 FRONTEND : React + typescript
 
-BACKEND : FastAPI
+BACKEND : NestJS
