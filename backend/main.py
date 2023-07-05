@@ -56,48 +56,6 @@ class Database:
         self.cursor = self.conn.cursor()
         pass
 
-    #insert to db
-    def petpost2db(self, pet:LostPetInfo, post:PostInfo) -> str:
-        '''
-        insert data to database:
-        the data used to insert is a dictionary
-        example:
-        {
-            'animal type': dog,
-            'color': 'red',
-            'weight': 4kg,
-            'height': 1m,
-            'location': HCMC
-        }
-
-        return 'S' if anim is inserted into database, else return 'F'
-        '''
-        
-        id = post.authorid[2:]+post.createDate.replace('-','')
-        #check if id is distinct with another
-        idloop = True
-        postI = 0
-        while idloop:
-            postI += 1
-            command = 'EXEC checkPost \'%s\'' % (id+str(postI))
-            self.cursor.execute(command)
-            for i in self.cursor:
-                if i[0] == 'NOT':
-                    idloop = False
-                    break
-        id += str(postI)
-        img_dir = '/image/'+id+'/'
-        petcommand = "EXEC sp_AddPet '%s', '%s', '%s', '%s', %f, %f,'%s', '%s', '%s', '%s', %d" % (id, pet.animalType, pet.lostdate, pet.detailtype, pet.weight, pet.height, pet.color, pet.name, pet.description, pet.location, 0 if pet.gender else 1)
-        postcommand = "EXEC sp_AddPost '%s', %d, %d, '%s', '%s', '%s', '%s'" % (id, 1 if post.level else 0, 1 if post.loss else 0, post.authorid, post.content, img_dir, post.createDate)
-        # try:
-        if post.level is True:
-            self.cursor.execute(petcommand)
-        self.cursor.execute(postcommand)
-        self.conn.commit()
-        # except:
-        #     return 'F'
-        return 'S'
-
     #get data from db
     def getMentorInfo(self, data: MentorInfo) -> list:
         if data.gender:
